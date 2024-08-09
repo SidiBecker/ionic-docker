@@ -9,16 +9,17 @@ ENV DEBIAN_FRONTEND=noninteractive \
     GRADLE_VERSION=8.7 \
     ANDROID_COMPILE_SDK=34 \
     ANDROID_BUILD_TOOLS=34.0.0 \
-    ALPINE_REPOSITORY_VERSION=v3.15 \
-    NODE_JS_VERSION=16.20.2-r0 \
-    DBUS_SESSION_BUS_ADDRESS=/dev/null
+    ALPINE_REPOSITORY_VERSION=v3.9 \
+    NODE_JS_VERSION=16.20.2 \
+    DBUS_SESSION_BUS_ADDRESS=/dev/null 
+
+ENV  NODE_PACKAGE_URL=https://unofficial-builds.nodejs.org/download/release/v"$NODE_JS_VERSION"/node-v"$NODE_JS_VERSION"-linux-x64-musl.tar.gz
 
 # Timezone
 RUN apk add tzdata
 RUN cp /usr/share/zoneinfo/America/Sao_Paulo /etc/localtime
 RUN echo "America/Sao_Paulo" > /etc/timezone
 RUN date
-
 
 RUN echo "https://dl-cdn.alpinelinux.org/alpine/$ALPINE_REPOSITORY_VERSION/main/" >> /etc/apk/repositories
 
@@ -27,13 +28,22 @@ RUN more /etc/apk/repositories
 # Install basics
 RUN apk update 
 RUN apk add --no-cache --upgrade bash
-RUN apk add libstdc++6 expect apache-ant wget libgcc qemu kmod util-linux
+RUN apk add expect apache-ant wget libgcc qemu kmod util-linux
 
 RUN apk add --virtual build-dependencies
 RUN apk add git wget curl unzip jq 
+
+WORKDIR /opt
+RUN wget $NODE_PACKAGE_URL -O nodejs.tar.gz
+RUN mkdir -p /opt/nodejs
+RUN tar -zxvf nodejs.tar.gz --directory /opt/nodejs --strip-components=1
+RUN rm nodejs.tar.gz
+RUN ln -s /opt/nodejs/bin/node /usr/local/bin/node
+RUN ln -s /opt/nodejs/bin/npm /usr/local/bin/npm
+
+WORKDIR /
 RUN apk add npm
 RUN apk update &&  \
-    apk add nodejs="$NODE_JS_VERSION" && \
     npm install -g \ 
     npm@"$NPM_VERSION" \
     cordova@"$CORDOVA_VERSION" \
@@ -51,10 +61,12 @@ ENV LANGUAGE en_US.UTF-8
 ENV LC_ALL en_US.UTF-8
 
 # Python instalation
-RUN apk add --update --no-cache python3 && ln -sf python3 /usr/bin/python 
-RUN python3 -m ensurepip
-RUN pip3 install --no-cache --upgrade pip
-RUN pip install pillow
+ENV PYTHONUNBUFFERED=1
+RUN apk add --update --no-cache python3  py-pip && ln -sf python3 /usr/bin/python
+RUN apk add py3-pillow
+RUN pip list
+
+WORKDIR /
 
 RUN  rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
@@ -71,7 +83,7 @@ RUN mkdir $ANDROID_DIR && cd $ANDROID_DIR && \
 
 # Install Gradle
 RUN mkdir /opt/gradle && cd /opt/gradle && \
-    wget --output-document=gradle.zip --quiet https://services.gradle.org/distributions/gradle-"$GRADLE_VERSION"-bin.zip && \
+    wget --output-document=gradle.zip --quiet https://services.gradle.org/distributions/gradle-$GRADLE_VERSION-bin.zip && \
     unzip -q gradle.zip && \
     rm -f gradle.zip && \
     chown -R root. /opt
