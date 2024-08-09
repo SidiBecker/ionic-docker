@@ -1,4 +1,4 @@
-FROM  adoptopenjdk/openjdk11:alpine
+FROM alpine/java:21-jdk
 MAINTAINER sidibecker [at] hotmail [dot] com
 
 ENV DEBIAN_FRONTEND=noninteractive \
@@ -10,7 +10,7 @@ ENV DEBIAN_FRONTEND=noninteractive \
     ANDROID_COMPILE_SDK=34 \
     ANDROID_BUILD_TOOLS=34.0.0 \
     ALPINE_REPOSITORY_VERSION=v3.15 \
-    NODE_JS_VERSION=16.20.0-r0 \
+    NODE_JS_VERSION=16.20.2-r0 \
     DBUS_SESSION_BUS_ADDRESS=/dev/null
 
 # Timezone
