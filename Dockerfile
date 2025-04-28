@@ -48,6 +48,12 @@ RUN mkdir /opt/gradle && cd /opt/gradle && \
     rm -f gradle.zip && \
     chown -R root:root /opt/gradle
 
+# Install Ruby and Fastlane
+RUN apt-get update && apt-get install -y ruby-full build-essential && \
+gem install fastlane
+
+RUN fastlane -v
+
 # Setup environment
 ENV ANDROID_HOME="${ANDROID_DIR}/sdk"
 ENV ANDROID_SDK_ROOT="${ANDROID_DIR}/sdk"
