@@ -28,7 +28,7 @@ ENV JAVA_HOME /usr/lib/jvm/java-21-openjdk-amd64
 ENV PATH $JAVA_HOME/bin:$PATH
 
 # Instale o Node.js
-RUN curl -fsSL https://deb.nodesource.com/setup_16.x | bash - && \
+RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash - && \
     apt-get install -y nodejs
 
 # Set the locale
@@ -42,4 +42,4 @@ RUN java -version && \
     node -v && \
     npm -v
 
-#docker build -t sidibecker/ubuntu22-jdk21-node16 -f DockerfileBaseImage . --progress=plain 
+#docker build -t sidibecker/ubuntu22-jdk21-node20 -f DockerfileBaseImage . --progress=plain 

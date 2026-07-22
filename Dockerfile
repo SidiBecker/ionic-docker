@@ -1,4 +1,4 @@
-FROM sidibecker/ubuntu22-jdk21-node16
+FROM sidibecker/ubuntu22-jdk21-node20
 MAINTAINER sidibecker [at] hotmail [dot] com
 
 ENV DEBIAN_FRONTEND=noninteractive \
@@ -6,8 +6,8 @@ ENV DEBIAN_FRONTEND=noninteractive \
     IONIC_VERSION=latest \
     CORDOVA_VERSION=10.0.0 \
     GRADLE_VERSION=8.13 \
-    ANDROID_COMPILE_SDK=35 \
-    ANDROID_BUILD_TOOLS=35.0.0 \
+    ANDROID_COMPILE_SDK=36 \
+    ANDROID_BUILD_TOOLS=36.0.0 \
     DBUS_SESSION_BUS_ADDRESS=/dev/null
 
 RUN date
@@ -43,7 +43,7 @@ RUN mkdir $ANDROID_DIR && cd $ANDROID_DIR && \
 
 # Install Gradle
 RUN mkdir /opt/gradle && cd /opt/gradle && \
-    wget --output-document=gradle.zip --quiet https://services.gradle.org/distributions/gradle-$GRADLE_VERSION-bin.zip && \
+    wget --output-document=gradle.zip --quiet https://services.gradle.org/distributions/gradle-${GRADLE_VERSION}-bin.zip && \
     unzip -q gradle.zip && \
     rm -f gradle.zip && \
     chown -R root:root /opt/gradle
@@ -63,3 +63,6 @@ ENV PATH="${PATH}:${ANDROID_HOME}:${ANDROID_HOME}/cmdline-tools:${ANDROID_HOME}/
 RUN yes | sdkmanager "build-tools;$ANDROID_BUILD_TOOLS" "platforms;android-$ANDROID_COMPILE_SDK" "platform-tools"
 
 WORKDIR Sources
+
+
+#docker build -t sidibecker/ionic-ci:7.0.x . --progress=plain 
